@@ -1,9 +1,10 @@
 #include <SDKDDKVer.h>
 #include <boost/asio.hpp>
 #include <iostream>
-#include <boost/archive/text_iarchive.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
+
+#include "Command.hpp"
 
 using namespace std;
 
@@ -27,14 +28,22 @@ int main() {
 	boost::iostreams::file_descriptor pfdes(pipe, boost::iostreams::close_handle);
 	boost::iostreams::stream_buffer<boost::iostreams::file_descriptor> psb(pfdes);
 	std::iostream pios(&psb);
-	boost::archive::text_iarchive input(pios);
-	char b[100];
-	input >> b;
-	cout << b;
 
 	for (;;) {
 		try {
-			break;
+			boost::archive::text_iarchive input(pios);
+			Command com;
+			input >> com;
+			switch (com.cmd) {
+			case COMMAND_TYPE_TRANSFER:
+				cout << com.transferArg << endl;
+				break;
+			case COMMAND_TYPE_CALL:
+				break;
+			}
+		}
+		catch (boost::archive::archive_exception &) {
+			return 0;
 		}
 		catch (...) {
 			cerr << "Unknown error occured" << endl;
