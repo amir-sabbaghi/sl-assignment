@@ -9,7 +9,7 @@
 class IOException : public std::exception {
 };
 
-template <class T> void send(HANDLE f, const T &v) {
+template <class T> void sendPipe(HANDLE f, const T &v) {
 	std::stringstream ss;
 	{
 		boost::archive::text_oarchive output(ss);
@@ -24,7 +24,7 @@ template <class T> void send(HANDLE f, const T &v) {
 		throw IOException();
 }
 
-template <class T> void recv(HANDLE f, T &v) {
+template <class T> void recvPipe(HANDLE f, T &v) {
 	DWORD len;
 	DWORD read;
 	if (!ReadFile(f, &len, sizeof(len), &read, nullptr) || read != sizeof(len))

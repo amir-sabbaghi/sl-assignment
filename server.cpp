@@ -28,14 +28,14 @@ int main() {
 	for (;;) {
 		try {
 			Command com;
-			recv(pipe, com);
+			recvPipe(pipe, com);
 			switch (com.cmd) {
 			case COMMAND_TYPE_TRANSFER:
 				cout << com.transferArg << endl;
 				list.push_back(com.transferArg);
 				break;
 			case COMMAND_TYPE_LIST:
-				send(pipe, list);
+				sendPipe(pipe, list);
 				break;
 			case COMMAND_TYPE_CALL:
 				break;

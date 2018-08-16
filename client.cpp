@@ -1,3 +1,4 @@
+#include "Client.hpp"
 #include "Command.hpp"
 #include "Pipe.hpp"
 
@@ -16,29 +17,18 @@ void usage() {
 
 int main() {
 	LPCSTR pipeName = "\\\\.\\pipe\\sl-test";
-	HANDLE pipe = CreateFileA(pipeName,
-		GENERIC_READ | GENERIC_WRITE,
-		0, nullptr, OPEN_EXISTING, 0, nullptr);
-	if (!pipe) {
-		cerr << "Could not connect to the server" << endl;
-		return 1;
-	}
+	Client c(pipeName);
 
 	for (;;) {
 		cout << "> " << std::flush;
 		string cmd;
 		cin >> cmd;
-		Command com;
 		if (cmd == "send") {
-			com.cmd = COMMAND_TYPE_TRANSFER;
-			cin >> com.transferArg;
-			send(pipe, com);
+			int v;
+			cin >> v;
+			c.send(v);
 		} else if (cmd == "l") {
-			com.cmd = COMMAND_TYPE_LIST;
-			send(pipe, com);
-			vector<int> list;
-			recv(pipe, list);
-			for (auto i: list)
+			for (auto i: c.list())
 				cout << i << endl;
 		} else if (cmd == "q") {
 			return 0;
@@ -47,4 +37,36 @@ int main() {
 		}
 	}
 	return 0;
+}
+
+Client::Client(const std::string &pipeName) {
+	pipe = CreateFileA(pipeName.c_str(),
+		GENERIC_READ | GENERIC_WRITE,
+		0, nullptr, OPEN_EXISTING, 0, nullptr);
+	if (!pipe) {
+		cerr << "Could not connect to the server" << endl;
+		throw std::exception();
+	}
+}
+
+Client::~Client() {
+	CloseHandle(pipe);
+}
+
+void Client::send(int v) {
+	lock_guard<mutex> lock(mut);
+	Command com;
+	com.cmd = COMMAND_TYPE_TRANSFER;
+	com.transferArg = v;
+	sendPipe(pipe, com);
+}
+
+vector<int> Client::list() {
+	lock_guard<mutex> lock(mut);
+	Command com;
+	com.cmd = COMMAND_TYPE_LIST;
+	sendPipe(pipe, com);
+	vector<int> list;
+	recvPipe(pipe, list);
+	return list;
 }
