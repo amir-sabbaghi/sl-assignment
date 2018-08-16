@@ -14,6 +14,7 @@ public:
 
 	void send(const GenericObject &v);
 	std::vector<GenericObject> list();
+	void call(const std::string &);
 
 protected:
 	HANDLE pipe;

@@ -38,6 +38,8 @@ int main() {
 				sendPipe(pipe, list);
 				break;
 			case COMMAND_TYPE_CALL:
+				if (list.size())
+					list.back().callMethod(com.method);
 				break;
 			}
 		}

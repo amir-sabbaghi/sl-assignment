@@ -43,6 +43,10 @@ int main() {
 		} else if (cmd == "l") {
 			for (auto i: c.list())
 				cout << i << endl;
+		} else if (cmd == "call") {
+			string method;
+			cin >> method;
+			c.call(method);
 		} else if (cmd == "q") {
 			return 0;
 		} else {
@@ -82,4 +86,12 @@ vector<GenericObject> Client::list() {
 	vector<GenericObject> list;
 	recvPipe(pipe, list);
 	return list;
+}
+
+void Client::call(const string & m) {
+	lock_guard<mutex> lock(mut);
+	Command com;
+	com.cmd = COMMAND_TYPE_CALL;
+	com.method = m;
+	sendPipe(pipe, com);
 }
