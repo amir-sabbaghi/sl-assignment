@@ -23,7 +23,7 @@ int main() {
 		return 1;
 	}
 
-	vector<int> list;
+	vector<GenericObject> list;
 
 	for (;;) {
 		try {

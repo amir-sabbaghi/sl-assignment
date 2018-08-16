@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Object.hpp"
+
 #include <SDKDDKVer.h>
 #include <Windows.h>
 #include <mutex>
@@ -10,8 +12,8 @@ public:
 	Client(const std::string &pipeName);
 	~Client();
 
-	void send(int v);
-	std::vector<int> list();
+	void send(const GenericObject &v);
+	std::vector<GenericObject> list();
 
 protected:
 	HANDLE pipe;

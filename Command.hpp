@@ -1,8 +1,7 @@
 #pragma once
 
-#include <string>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include "Object.hpp"
+
 #include <boost/serialization/vector.hpp>
 
 enum CommandType {
@@ -14,7 +13,7 @@ enum CommandType {
 class Command {
 public:
 	CommandType cmd;
-	int transferArg;
+	GenericObject transferArg;
 	std::string method;
 protected:
 	friend class boost::serialization::access;

@@ -9,7 +9,7 @@
 using namespace std;
 
 void usage() {
-	cout << "send VALUE         send VALUE to server" << endl;
+	cout << "send TYPE VALUE    send VALUE to server" << endl;
 	cout << "l                  list the list of stored values on the server" << endl;
 	cout << "call METHOD        call method on the last object" << endl;
 	cout << "q                  quit" << endl;
@@ -24,9 +24,22 @@ int main() {
 		string cmd;
 		cin >> cmd;
 		if (cmd == "send") {
-			int v;
-			cin >> v;
-			c.send(v);
+			GenericObject o;
+			string type;
+			cin >> type;
+			if (type == "string") {
+				string v;
+				cin >> v;
+				o.put(v);
+			} else if (type == "int") {
+				int v;
+				cin >> v;
+				o.put(v);
+			} else {
+				usage();
+				continue;
+			}
+			c.send(o);
 		} else if (cmd == "l") {
 			for (auto i: c.list())
 				cout << i << endl;
@@ -53,20 +66,20 @@ Client::~Client() {
 	CloseHandle(pipe);
 }
 
-void Client::send(int v) {
+void Client::send(const GenericObject & o) {
 	lock_guard<mutex> lock(mut);
 	Command com;
 	com.cmd = COMMAND_TYPE_TRANSFER;
-	com.transferArg = v;
+	com.transferArg = o;
 	sendPipe(pipe, com);
 }
 
-vector<int> Client::list() {
+vector<GenericObject> Client::list() {
 	lock_guard<mutex> lock(mut);
 	Command com;
 	com.cmd = COMMAND_TYPE_LIST;
 	sendPipe(pipe, com);
-	vector<int> list;
+	vector<GenericObject> list;
 	recvPipe(pipe, list);
 	return list;
 }
