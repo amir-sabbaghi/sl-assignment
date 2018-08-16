@@ -28,6 +28,10 @@ Now build the project with [cmake](https://github.com/Kitware/CMake).
 # cmake --build .
 ```
 
+## Binaries
+
+You can find binaries in [releases](https://github.com/amir-sabbaghi/sl-assignment/releases) section.
+
 ## Usage
 
 You need to run `server.exe` first and then `client.exe`.
