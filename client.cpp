@@ -1,10 +1,9 @@
-#include <SDKDDKVer.h>
+#include "Command.hpp"
+#include "Pipe.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <boost/asio.hpp>
-
-#include "Command.hpp"
 
 using namespace std;
 
@@ -16,8 +15,10 @@ void usage() {
 
 int main() {
 	LPCSTR pipeName = "\\\\.\\pipe\\sl-test";
-	fstream pios(pipeName);
-	if (!pios.is_open()) {
+	HANDLE pipe = CreateFileA(pipeName,
+		GENERIC_READ | GENERIC_WRITE,
+		0, nullptr, OPEN_EXISTING, 0, nullptr);
+	if (!pipe) {
 		cerr << "Could not connect to the server" << endl;
 		return 1;
 	}
@@ -27,11 +28,10 @@ int main() {
 		string cmd;
 		cin >> cmd;
 		if (cmd == "send") {
-			boost::archive::text_oarchive output(pios);
 			Command com;
 			com.cmd = COMMAND_TYPE_TRANSFER;
 			cin >> com.transferArg;
-			output << com;
+			send(pipe, com);
 		} else if (cmd == "q") {
 			return 0;
 		} else {

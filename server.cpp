@@ -1,10 +1,7 @@
-#include <SDKDDKVer.h>
-#include <boost/asio.hpp>
-#include <iostream>
-#include <boost/iostreams/device/file_descriptor.hpp>
-#include <boost/iostreams/stream.hpp>
-
 #include "Command.hpp"
+#include "Pipe.hpp"
+
+#include <iostream>
 
 using namespace std;
 
@@ -25,15 +22,10 @@ int main() {
 		return 1;
 	}
 
-	boost::iostreams::file_descriptor pfdes(pipe, boost::iostreams::close_handle);
-	boost::iostreams::stream_buffer<boost::iostreams::file_descriptor> psb(pfdes);
-	std::iostream pios(&psb);
-
 	for (;;) {
 		try {
-			boost::archive::text_iarchive input(pios);
 			Command com;
-			input >> com;
+			recv(pipe, com);
 			switch (com.cmd) {
 			case COMMAND_TYPE_TRANSFER:
 				cout << com.transferArg << endl;
@@ -41,6 +33,9 @@ int main() {
 			case COMMAND_TYPE_CALL:
 				break;
 			}
+		}
+		catch (IOException &) {
+			return 0;
 		}
 		catch (boost::archive::archive_exception &) {
 			return 0;
