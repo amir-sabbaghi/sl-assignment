@@ -3,9 +3,11 @@
 #include <string>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 enum CommandType {
 	COMMAND_TYPE_TRANSFER,
+	COMMAND_TYPE_LIST,
 	COMMAND_TYPE_CALL,
 };
 
@@ -25,6 +27,8 @@ protected:
 			break;
 		case COMMAND_TYPE_CALL:
 			ar & method;
+			break;
+		case COMMAND_TYPE_LIST:
 			break;
 		default:
 			throw std::exception();

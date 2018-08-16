@@ -2,6 +2,7 @@
 #include "Pipe.hpp"
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -22,6 +23,8 @@ int main() {
 		return 1;
 	}
 
+	vector<int> list;
+
 	for (;;) {
 		try {
 			Command com;
@@ -29,6 +32,10 @@ int main() {
 			switch (com.cmd) {
 			case COMMAND_TYPE_TRANSFER:
 				cout << com.transferArg << endl;
+				list.push_back(com.transferArg);
+				break;
+			case COMMAND_TYPE_LIST:
+				send(pipe, list);
 				break;
 			case COMMAND_TYPE_CALL:
 				break;

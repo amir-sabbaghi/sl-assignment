@@ -2,13 +2,14 @@
 #include "Pipe.hpp"
 
 #include <iostream>
-#include <fstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 void usage() {
 	cout << "send VALUE         send VALUE to server" << endl;
+	cout << "l                  list the list of stored values on the server" << endl;
 	cout << "call METHOD        call method on the last object" << endl;
 	cout << "q                  quit" << endl;
 }
@@ -27,11 +28,18 @@ int main() {
 		cout << "> " << std::flush;
 		string cmd;
 		cin >> cmd;
+		Command com;
 		if (cmd == "send") {
-			Command com;
 			com.cmd = COMMAND_TYPE_TRANSFER;
 			cin >> com.transferArg;
 			send(pipe, com);
+		} else if (cmd == "l") {
+			com.cmd = COMMAND_TYPE_LIST;
+			send(pipe, com);
+			vector<int> list;
+			recv(pipe, list);
+			for (auto i: list)
+				cout << i << endl;
 		} else if (cmd == "q") {
 			return 0;
 		} else {
